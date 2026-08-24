@@ -66,9 +66,20 @@
       border-radius: 7px;
       font-size: 16px;
       font-weight: bold;
+      cursor: pointer;
     }
 
-    .back {
+    button:disabled {
+      opacity: 0.6;
+    }
+
+    .message {
+      margin-top: 15px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .register-link {
       display: block;
       text-align: center;
       margin-top: 20px;
@@ -84,23 +95,87 @@
 
     <h1>Petmos Courses</h1>
 
-    <p class="subtitle">Login to your account</p>
+    <p class="subtitle">Login to your student account</p>
 
-    <form>
+    <form id="loginForm">
 
       <label for="email">Email Address</label>
-      <input type="email" id="email" placeholder="Enter your email" required>
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your email"
+        required
+      >
 
       <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Enter your password" required>
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter your password"
+        required
+      >
 
-      <button type="submit">Login</button>
+      <button type="submit" id="loginButton">
+        Login
+      </button>
 
     </form>
 
-    <a href="index.html" class="back">← Back to Home</a>
+    <p id="message" class="message"></p>
+
+    <a href="register.html" class="register-link">
+      Don't have an account? Create one
+    </a>
 
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL =
+      "https://vrozqxqfztiatuspuonx.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+   "sb_publishable_lDOWrYQVC1Zj819W8NFZeg_5mFONJcJ"
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+    const form = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+    const button = document.getElementById("loginButton");
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const password =
+        document.getElementById("password").value;
+
+      button.disabled = true;
+      button.textContent = "Logging in...";
+      message.textContent = "";
+
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+      if (error) {
+        message.textContent = error.message;
+        button.disabled = false;
+        button.textContent = "Login";
+        return;
+      }
+
+      window.location.href = "dashboard.html";
+    });
+  </script>
 
 </body>
 </html>
